@@ -1,12 +1,15 @@
 import pandas as pd
 import numpy as np
 from numba.core.types import optional
+from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import os
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 from kneed import KneeLocator
 from sklearn.decomposition import PCA
+import seaborn as sns
+
 
 np.random.seed(42)
 
@@ -61,7 +64,14 @@ plt.xlabel("PC1")
 plt.ylabel("PC2")
 plt.savefig("../figures/pca-chart.png")
 
+kmeans = KMeans(n_clusters=optimal_clusters, random_state=42)
+df_pca["KMeans_Cluster"] = kmeans.fit_predict(df_pca)
+kmeans_sc = silhouette_score(df_pca, kmeans.labels_)
+print(kmeans_sc)
 
 
+sns.scatterplot(data=df_pca, x="PC1", y="PC2", hue="KMeans_Cluster", palette="viridis", s=100, edgecolor="black")
+plt.title("K-Means Clustering group after PCA")
+plt.savefig("../figures/k-means-clustering-after-pca.png")
 
 
